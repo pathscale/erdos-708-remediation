@@ -1,0 +1,27 @@
+# Certified Numerical Constants for Erdős Problem #708 (Paper III: Scaled-Interval Hinge & Smooth Matching)
+
+- **Author:** C. Bergström (`24x AI Research`, ORCID `0009-0008-7153-1817`)
+- **System:** `Karen` (`24x AI Research`)
+- **DualKernel Formal Lean 4 Audit (`lean_formalization/`):**
+  - Total verified files: `5` (`Prop8.lean`: `16` decls, `HingeInequality.lean`: `15` decls, `Theorem3.lean`: `10` decls, `Corollary4.lean`: `5` decls, `Theorem6.lean`: `5` decls)
+  - Total clean declarations: **`51`**, `sorry_gaps = 0`, `file_errors = 0`
+  - Module SHA-256 digests:
+    - `lean_formalization/Prop8.lean`: `6497acb6d851bad19945f907093adc66e4eec4788961b42665c0170e0be1b510`
+    - `lean_formalization/HingeInequality.lean`: `afa4f331693092675c253f5949ba1d26f378735af9f9b438f944e49b348dc291`
+    - `lean_formalization/Theorem3.lean`: `44822c7309a421f0ec7fcd4c501ed5d5deab3b1867b593640d757581f9322051`
+    - `lean_formalization/Corollary4.lean`: `b41333c899fe05e30f60c91d7c729dadf11df8faed5b4db2abde486dd11b5ff3`
+    - `lean_formalization/Theorem6.lean`: `3d1e7270fdd143386fb877dae33f21a13f5e9958bbe59304c63640cf7f101d8f`
+- **Scaled-Interval $s$-Integral & Two-Prime Dominance (`verify_s_integral_corrected.rs`, `explore_h2_smooth.rs`):**
+  - `verify_s_integral_corrected.rs` (`3,174` bytes, SHA-256 `05ec9b8d6e30a0d987d3319387955a2d19e5b88a7bd796445944894fda6a2ad3`): Exact equivalence between $(H_2)$ and scaled-interval $s$-integral over $I_{j,r}$ verified across regimes and adversarial CRT shifts.
+  - `explore_h2_smooth.rs` (`27,202` bytes, SHA-256 `48add0a21fd8869f5e66f45114fd48e219bc0f7ebf1b7b527a30362bc3c86fc0`):
+    - Two-prime ($K \le 2$) analytical dominance (`Theorem 2`): `44,800` $(p_1, p_2, w_1, w_2, M, x)$ configurations verified (`min_surplus(H_1) = 0.000000`, `min_surplus(H_2) = 0.000000`).
+    - Three-prime necessity witness $P = \{5, 7, 11\}$, $M = 77$, period `67,375`: `min_surplus(H_1) = -1.00` at $x = 1{,}127$, `min_surplus(H_2) = +7.00` at $x = 1{,}127$.
+- **Difference-of-Convex Witness, High Prime Powers, and Smooth Matching (`verify_three_final_checks.rs`):**
+  - `verify_three_final_checks.rs` (`17,038` bytes, SHA-256 `84b59b9b7093c0ef1982088eaee9dc5a79140d54a5785586da5bd2c3e2a10e92`):
+    - Five-prime exact `u128` DC counterexample (`Proposition 3`): $P = \{29, 31, 37, 41, 43\}$, $M = 37 \cdot 41 \cdot 43 = 65{,}231$, $x_5 = 6{,}697{,}389{,}240{,}194{,}279{,}945{,}569{,}557{,}312{,}011$, center $z = x_5 + 32{,}616 \equiv a_i p_i \pmod{p_i^4}$ with $a = (1132, 1066, 1374, 823, 777)$, $c = 1.06$:
+      - Across all `32` binary vertices $w \in \{0, 1\}^5$: `max F_{1.06}(w) = 0.0000 <= 0`.
+      - At interior midpoint $w_* = (0.5, 0.5, 0.5, 0.5, 0.5)$: `LHS = 15.4000` (`35` terms $\times 0.44$: `10` squarefree triples + `3` cubes + `22` square-semiprimes), `RHS = 14.5000` (`27` terms: center `1.50` + `26` off-center $\Omega_P = 3$ terms consisting of `5` cubes $p_i^3$ and `21` square-semiprimes $p_i^2 p_j$, contributing `13.00`), `F_{1.06}(w_*) = +0.9000 > 0`.
+    - Exact uncut $r \ge 2$ series constant (`Theorem 4(1)`): $\sum_{p \ge 2} \sum_{r \ge 2} \frac{1}{(r - 1) p^r} = 0.579931$.
+    - Discrete intermediate-value divisor peeling (`Theorem 4(3)`): `2,530` $(k_0, s)$ pairs tested at $\varepsilon = 0.05$, `100%` land in $(s, s + 1 + \varepsilon]$.
+    - Smooth Hopcroft–Karp CRT matchings (`Theorem 5(1)`): `143 / 143` at $(n = 100, Q_n = 210, M = 300)$, `650 / 650` at $(n = 250, Q_n = 520, M = 1{,}200)$, `1,728 / 1,728` at $(n = 500, Q_n = 1{,}050, M = 3{,}000)$, and `9,457 / 9,457` up to $M = 15{,}120$ in companion suite `10.5281/zenodo.24342717`.
+    - Continuous coordinate-ascent (`Q_n = 40, M = 2,500`, `5` initializations under `ES_vp1`): `max F_2(w) = 0.000000 <= 0`.

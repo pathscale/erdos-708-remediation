@@ -1,0 +1,275 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.95in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,url,array}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\sm}{sm}
+
+\title{Scaled-Interval Hinge Telescoping, Difference-of-Convex Obstructions, and\\ Smooth Proper-Divisor Matching for Erd\H{o}s Problem 708}
+\author{C. Bergstr\"om \\ 24x AI Research \\ \texttt{ORCID: 0009-0008-7153-1817}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Erd\H{o}s Problem 708 asks whether every $n$-element integer set $A$ above one admits a near-double-size product cover inside every shifted block $I_x$. Companion work reduces intervals below $Q_n^2$ to the shifted-interval hinge inequality $(H_c)$ on $Q_n$-smooth prime weights. This paper develops the scaled-interval integral decomposition of $(H_c)$ and isolates the analytical obstructions below coefficient two. Telescoping over scaled intervals $I_{j, r}$ proves deterministic dominance across all negative thresholds and eliminates high prime powers once $(r - 1) w_{p_j}$ reaches one. Every weight vector supported on at most two primes satisfies $(H_c)$ pointwise across all thresholds from one upward. A five-prime Chinese Remainder witness at $M = 65{,}231$ satisfies $(H_{1.06})$ on all thirty-two binary vertices while failing at the cube midpoint. That counterexample rules out binary extreme-point reduction. Discrete intermediate-value divisor peeling bounds high prime powers prime by prime, while $Q_n$-smooth proper-divisor matching implies $(H_2)$ across all continuous weights simultaneously. DualKernel verifies $51$ Lean declarations with zero unproven axioms. Three explicit analytical obligations remain open.
+\end{abstract}
+
+\section{Introduction, Obstructions, and Main Results}
+
+Pointwise comparison of prime-weighted level sets across a shifted interval $I_x$ fails once interval length reaches $e^{100}$~\cite{hensleyrichards74}. Hensley and Richards constructed shifted blocks with $\Theta(L / \ln^2 L)$ more primes than the initial block, breaking threshold-zero dominance under unit weights. A second failure invalidates binary vertex shortcuts on fractional prime weights. Both sides of the shifted-interval hinge inequality are convex in the weight vector, so their difference can peak strictly inside the unit cube.
+
+Fix a finite integer set $A$ above one of size $n$ with maximum $M = \max(A)$ and non-negative shift $x$. Define the consecutive block and minimum product-cover number by
+\[
+I_x := \{x + 1, \dots, x + M\}, \qquad \tau(A, I_x) := \min\Bigl\{ |B| : B \subseteq I_x, \; \prod_{a \in A} a \;\Big|\; \prod_{b \in B} b \Bigr\}.
+\]
+Taking the supremum over all $n$-sets and shifts defines $g(n)$~\cite{erdossuranyi59}.\footnote{Writing $|B| \le g(n)$ follows Bloom~\cite{bloom708} and L.~Mazur, since consecutive inputs up to $n + 1$ bound $|B|$ by $n + 1$.} Explicitly,
+\[
+g(n) := \sup\bigl\{ \tau(A, I_x) : A \subseteq \mathbb{Z}_{\ge 2}, \; |A| = n, \; M = \max(A), \; x \ge 0 \bigr\}.
+\]
+
+Erd\H{o}s and Sur\'anyi~\cite{erdossuranyi59} proved $g(3) = 4$ and established their asymptotic lower bound using semiprime cliques around one divisible center. Two later problem papers by Erd\H{o}s highlighted the asymptotic conjecture~\cite{erdos92c,erdos95}, catalogued under Problem 708~\cite{bloom708}. Chen~\cite{chen26} established linear upper bounds of twelve-times-$n$ in Lean 4 and eleven-times-$n$ via linear-programming hinge duality. The first companion paper~\cite{bergstrom26small} resolved $g(6) = 8$, alongside exact covers for four-element and five-element sets and constructive lower-bound witnesses. Whole-cofactor cumulative-GCD peeling and smooth extreme-point rounding in the second companion paper~\cite{bergstrom26asymptotic} lowered the unconditional global coefficient below $8.83$.
+
+Smooth rank rounding also showed that $(H_c)$ near threshold two on $Q_n$-smooth weights yields near-optimal covers below $Q_n^2$. The general asymptotic conjecture remains open. This paper proves four unconditional structural theorems for the $Q_n$-smooth hinge functional and isolates three open analytical obligations. Table~\ref{tab:overview} summarizes all interval regimes, including the $51$ DualKernel-verified Lean declarations proved here.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{p{4.5cm}p{4.8cm}p{5.8cm}}
+\toprule
+Regime or Object & Proved Bound / Identity & Method and Status \\
+\midrule
+Small cardinalities $n \le 6$ & $g(4) = 5,\; g(5) = 6,\; g(6) = 8$ & Certified CRT + slot packing~\cite{bergstrom26small} \\
+Short intervals $M \le Q_n - 1$ & $\tau(A, I_x) \le M < Q_n$ & Full-interval factorial cover~\cite{bergstrom26asymptotic} \\
+Global unconditional $M \ge 2$ & $g(n) \le (56501 / 6400 + o(1)) n$ & Smooth LP rounding + $(H_{56501/6400})$~\cite{bergstrom26asymptotic} \\
+Quadratic regime $M \ge 9n^2$ & $\tau(A, I_x) \le 3n$ & Whole-cofactor peeling~\cite{bergstrom26asymptotic} \\
+Cubic regime $M \ge 8n^3$ & $\tau(A, I_x) \le 2n$ & Long-interval prime cover~\cite{chen26} \\
+Negative slice $s < 0$ and $K \le 2$ & Deterministic $(H_c)$ for all $c \ge 1$ & Proposition~\ref{prop:equiv} and Theorem~\ref{thm:twoprime} ($31$ Lean decls) \\
+Binary vertex reduction on $[0, 1]^5$ & Refuted at $M = 65{,}231$, $c = 1.06$ & Proposition~\ref{prop:dc} interior witness ($+0.90 > 0$) \\
+High prime powers $p_j^r > M / L_0$ & Tail $< 2 L_0 w_{p_j}$ + divisor band & Theorem~\ref{thm:peeldiv} discrete divisor peeling (Lean) \\
+Smooth matching $\mathcal{M}_{\ge 3}(Q_n) \hookrightarrow I_x$ & Implies $(H_2)$ on all $w \in \mathcal{W}(Q_n)$ & Theorem~\ref{thm:smooth} (verified to $M = 15{,}120$, open in general) \\
+\bottomrule
+\end{tabular}
+\caption{Summary of unconditional bounds, structural hinge theorems, and remaining open regimes for Erd\H{o}s Problem 708.}
+\label{tab:overview}
+\end{table}
+
+\section{Scaled-Interval Telescoping and Two-Prime Pointwise Dominance}
+
+This section establishes the exact scaled-interval integral equivalence for $(H_c)$ and resolves all one-prime and two-prime weight vectors unconditionally. Omitting division by $p_j^r$ in the inner domain breaks telescoping whenever higher prime powers divide elements of $I_x$.
+
+Fix an integer $M \ge 2$, a non-negative integer shift $x$, and a unit-cube prime-weight vector $w$. Write $(t)_+$ for the positive part and define the weighted valuation
+\[
+X_w(m) := \sum_{p \le M} v_p(m) w_p \ge 0.
+\]
+Given a threshold $c \ge 1$, the deterministic shifted-interval hinge inequality $(H_c)$ at $(M, x, w)$ asserts
+\[
+\sum_{m = 1}^M (X_w(m) - c)_+ \;\le\; \sum_{b \in I_x} (X_w(b) - 1)_+.
+\]
+Order the active primes $p_1 < \dots < p_K \le M$ carrying positive weight. Define the prefix valuation sum by $Y_1(u) := 0$ and
+\[
+Y_j(u) := \sum_{i = 1}^{j - 1} v_{p_i}(u) w_{p_i} \qquad (2 \le j \le K).
+\]
+For each active prime $p_j$ and positive exponent $r$, put $L_{j, r} = \lfloor M / p_j^r \rfloor$ and define the scaled block
+\[
+I_{j, r} := \left\{\left\lfloor \frac{x}{p_j^r} \right\rfloor + 1, \dots, \left\lfloor \frac{x + M}{p_j^r} \right\rfloor\right\}, \qquad |I_{j, r}| \in \{L_{j, r},\; L_{j, r} + 1\}.
+\]
+
+\begin{proposition}[Scaled-Interval Hinge Equivalence and Negative-$s$ Dominance]
+\label{prop:equiv}
+Fix $c \ge 1$, integer $M \ge 2$, non-negative shift $x$, and unit-cube prime-weight vector $w$.
+\begin{enumerate}
+\item Every real $u$ and ordered pair $a \le b$ obey the slice identity
+\[
+(u - a)_+ - (u - b)_+ = \int_a^b \mathbf{1}_{u > t}\,dt = \bigl(\min(u, b) - a\bigr)_+.
+\]
+Consequently, $(H_c)$ holds at $(M, x, w)$ if and only if
+\[
+\sum_{j = 1}^K \sum_{r \ge 1} \sum_{k = 1}^{L_{j, r}} \int_{1 - r w_{p_j}}^{1 - (r - 1) w_{p_j}} \mathbf{1}_{Y_j(k) > s + c - 1}\,ds
+\;\le\;
+\sum_{j = 1}^K \sum_{r \ge 1} \sum_{b' \in I_{j, r}} \int_{1 - r w_{p_j}}^{1 - (r - 1) w_{p_j}} \mathbf{1}_{Y_j(b') > s}\,ds.
+\]
+\item Across every negative threshold $s < 0$, every active index $j$, and every positive exponent $r$,
+\[
+\sum_{k = 1}^{L_{j, r}} \mathbf{1}_{Y_j(k) > s + c - 1} \;\le\; L_{j, r} \;\le\; |I_{j, r}| \;=\; \sum_{b' \in I_{j, r}} \mathbf{1}_{Y_j(b') > s}.
+\]
+Every pair $(j, r)$ with $p_j^r > M$ or $(r - 1) w_{p_j} \ge 1$ therefore satisfies deterministic dominance across its full integration domain.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+Coprimality between distinct primes ensures $Y_j(p_j^r k) = Y_j(k)$ across all positive integers $r$ and $k$. Telescoping the single-prime increments across active indices recovers $(X_w(u) - c_0)_+$. Expanding each increment across exponents up to $v_{p_j}(u)$ maps multiples of $p_j^r$ up to $M$ bijectively onto the initial block of length $L_{j, r}$. Multiples of $p_j^r$ in $I_x$ map bijectively onto $I_{j, r}$, and shifting the integration variable gives the first claim.
+
+On negative thresholds $s < 0$, non-negativity of $Y_j(b')$ sets every indicator on $I_{j, r}$ equal to one, while $|I_{j, r}|$ dominates $L_{j, r}$. Whenever $p_j^r > M$, the left sum has $L_{j, r} = 0$ terms. If $(r - 1) w_{p_j}$ reaches one, the upper integration limit is non-positive, placing the entire domain below zero.
+\end{proof}
+
+Unit weights satisfy $(r - 1) w_{p_j} \ge 1$ across every exponent above one. Binary weights therefore eliminate all higher prime-power contributions on the positive-$s$ axis automatically.
+
+\begin{theorem}[Unconditional Pointwise Dominance for Two Active Primes]
+\label{thm:twoprime}
+Let $w$ be a unit-cube prime-weight vector supported on at most two distinct primes. Across every threshold $c \ge 1$, integer $M \ge 2$, and non-negative shift $x$, the integrand in Proposition~\ref{prop:equiv} satisfies pointwise dominance at every $(j, r, s)$. (The degenerate case $M$ equal to one holds vacuously.)
+\end{theorem}
+\begin{proof}
+Proposition~\ref{prop:equiv} resolves every negative $s$. Consider non-negative $s$. At $j = 1$, the prefix sum $Y_1$ vanishes identically, making both indicators zero. For the second index with positive weight $w_1$, define the integer exponent threshold
+\[
+a(t) := \lfloor t / w_1 \rfloor + 1 \ge 1 \qquad (t \ge 0).
+\]
+Because $Y_2(u) = w_1 v_{p_1}(u)$, the strict bound $Y_2(u) > t$ holds exactly when $p_1^{a(t)}$ divides $u$. Nested floor division on the initial block gives
+\[
+\sum_{k = 1}^{L_{2, r}} \mathbf{1}_{Y_2(k) > s + c - 1} = \left\lfloor \frac{L_{2, r}}{p_1^{a(s + c - 1)}} \right\rfloor = \left\lfloor \frac{M}{p_1^{a(s + c - 1)} p_2^r} \right\rfloor.
+\]
+An integer $b'$ lies in $I_{2, r}$ with $p_1^{a(s)}$ dividing $b'$ precisely when $p_2^r b'$ lies in $I_x$ and is divisible by $p_1^{a(s)} p_2^r$. Counting multiples inside $I_x$ yields
+\[
+\sum_{b' \in I_{2, r}} \mathbf{1}_{Y_2(b') > s} = \bigl|I_x \cap p_1^{a(s)} p_2^r \mathbb{Z}\bigr| \;\ge\; \left\lfloor \frac{M}{p_1^{a(s)} p_2^r} \right\rfloor.
+\]
+Monotonicity of $a(t)$ implies $a(s + c - 1) \ge a(s)$ whenever $c \ge 1$, establishing pointwise dominance.
+\end{proof}
+
+Theorem~\ref{thm:twoprime} explains why $(H_1)$ holds universally on two primes. Erd\H{o}s and Sur\'anyi's lower bound $g(3) = 4$ therefore requires at least three active primes. On the prime triple of five, seven, and eleven at $M = 77$, shift $x = 1{,}127$ violates $(H_1)$ by one while $(H_2)$ holds.
+
+\section{Difference-of-Convex Non-Convexity and High Prime Powers}
+
+Extending $(H_c)$ beyond two active primes encounters two analytical pitfalls on interior weights. On five primes up to $43$ at $M = 65{,}231$, every binary vertex satisfies $(H_{1.06})$ while the cube midpoint fails.
+
+Fix $(M, x, c)$ and define the hinge difference functional on the $K$-dimensional unit cube by
+\[
+F_c(w) := \sum_{m = 1}^M (X_w(m) - c)_+ - \sum_{b \in I_x} (X_w(b) - 1)_+.
+\]
+Each summand is convex and piecewise linear in $w$. Subtracting two convex sums produces a difference-of-convex objective whose maxima lie on chambers of the kink arrangement rather than on binary vertices.
+
+\begin{proposition}[Interior Violation of Binary Vertex Reduction]
+\label{prop:dc}
+Define the five-prime set $P$, product $M$, and shift $x_5$ by
+\[
+P := \{29, 31, 37, 41, 43\}, \quad M := 37 \cdot 41 \cdot 43 = 65{,}231, \quad x_5 := 6{,}697{,}389{,}240{,}194{,}279{,}945{,}569{,}557{,}312{,}011.
+\]
+Here $z = x_5 + 32{,}616$ satisfies $z \equiv a_i p_i \pmod{p_i^4}$ with
+\[
+(a_1, a_2, a_3, a_4, a_5) = (1132, 1066, 1374, 823, 777).
+\]
+At threshold $c = 1.06$ and cube midpoint $w_*$,
+\[
+w_* := \bigl(\tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}, \tfrac{1}{2}\bigr), \qquad \max_{w \in \{0, 1\}^5} F_{1.06}(w) = 0, \qquad F_{1.06}(w_*) = +0.90 > 0.
+\]
+\end{proposition}
+\begin{proof}
+Every integer $k$ up to $M$ has $P$-multiplicity at most three because the fourth power of $29$ exceeds $M$. Exactly $35$ integers in the initial block achieve multiplicity three, comprising ten squarefree triples, three cubes, and twenty-two products $p_i^2 p_j$. At $w_*$, integers of multiplicity at most two satisfy $X_{w_*}(k) \le 1$. Each three-factor integer contributes $0.44$, giving a left sum of $15.40$.
+
+Inside $I_{x_5}$, the center $z$ has valuation one at all five primes and contributes $1.50$. Every semiprime outside $z$ sits on the kink $X_{w_*}(b) = 1$ and contributes zero. Because every prime in $P$ divides $z$, any prime in $P$ dividing $z + d$ also divides $d$. Since the triple product $33{,}263$ of the three smallest primes exceeds the half-width $32{,}615$, no off-center element has three distinct prime factors in $P$. Direct division confirms $v_{p_i}(b)$ stays at most three across $I_{x_5}$. Exactly $26$ off-center elements achieve multiplicity three via five cube multiples and twenty-one square-semiprime multiples, contributing $13.00$. Adding the center gives a right sum of $14.50$ and net $+0.90$ at $w_*$. All $32$ binary vertices meanwhile satisfy non-positivity at zero.
+\end{proof}
+
+Fractional weights also activate higher exponents $r \ge 2$ on the positive-$s$ slice $J_{j, r}^+$ whenever $(r - 1) w_{p_j}$ stays below one. Define the positive-$s$ slice integral at $(j, r)$ by
+\[
+J_{j, r}^+ := [1 - r w_{p_j},\, 1 - (r - 1) w_{p_j}] \cap [0, 1], \qquad \mathrm{LHS}_{j, r}^+ := \sum_{k = 1}^{L_{j, r}} \int_{J_{j, r}^+} \mathbf{1}_{Y_j(k) > s + c - 1}\,ds \;\le\; w_{p_j} L_{j, r}.
+\]
+Bounding $J_{j, r}^+$ naively by its width across all higher exponents yields a linear constant exceeding $\varepsilon M$ for small $\varepsilon$. Truncating at scale $L_0 \ge 1$ and peeling prime factors from witnesses below $L_0$ controls these tails prime by prime.
+
+\begin{theorem}[Discrete Intermediate-Value Divisor Peeling for High Prime Powers]
+\label{thm:peeldiv}
+Fix positive $\varepsilon$, threshold $c = 2 + \varepsilon$, interval length $M \ge 2$, non-negative shift $x$, and weight vector $w$.
+\begin{enumerate}
+\item Summing $(r - 1)^{-1} p^{-r}$ across all primes and exponents $r \ge 2$ gives the exact series value
+\[
+\sum_{p \ge 2} \sum_{r \ge 2} \frac{1}{(r - 1) p^r} = \sum_{p \ge 2} \frac{1}{p} \ln\Bigl(\frac{p}{p - 1}\Bigr) \approx 0.579931.
+\]
+\item Fix an integer cutoff $L_0 \ge 1$. Every pair $(j, r)$ above $M / L_0$ with positive slice integral $\mathrm{LHS}_{j, r}^+$ forces $(r - 1) w_{p_j}$ below one and obeys
+\[
+\sum_{r \ge 2,\, p_j^r > M / L_0} \mathrm{LHS}_{j, r}^+ \;\le\; w_{p_j} \sum_{r \ge 2,\, p_j^r > M / L_0} \left\lfloor \frac{M}{p_j^r} \right\rfloor \;<\; 2 L_0 w_{p_j}.
+\]
+\item Suppose an integer $k_0$ up to $L_0$ satisfies $Y_j(k_0) > 1 + \varepsilon$. Every threshold $s$ in the unit interval then admits a positive divisor $d_0$ of $k_0$ satisfying
+\[
+s + \varepsilon < Y_j(d_0) \le s + 1 + \varepsilon.
+\]
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Setting $m = r - 1$ inside the logarithmic power series proves the first identity. In the second claim, Proposition~\ref{prop:equiv} forces $(r - 1) w_{p_j}$ below one whenever $\mathrm{LHS}_{j, r}^+$ is positive. Geometric halving from the first prime power above $M / L_0$ bounds the tail sum below $2 L_0 w_{p_j}$.
+
+For the third claim, factor $k_0$ into primes with multiplicity and form the divisor prefix chain starting at one. Each prime factor increases $Y_j$ by at most one. Because $Y_j$ starts at zero while $Y_j(k_0)$ exceeds $s + \varepsilon$, the first prefix divisor above $s + \varepsilon$ lands in the target band.
+\end{proof}
+
+Multiples $k = d_0 u$ up to the first-power cutoff with $u$ coprime to $p_1 \cdots p_{j - 1} d_0$ preserve $Y_j(d_0 u) = Y_j(d_0)$. Those multiples supply abundant complementary slots at unit exponent whenever $L_0^2 \ln Q_n$ grows slower than $L_{j, 1}$.
+
+\section{Smooth Proper-Divisor Matching and Asymptotic Sieve Regimes}
+
+Combinatorial matching on $Q_n$-smooth parts bypasses difference-of-convex non-convexity across all continuous dual weights simultaneously. Replacing an integer $m$ by its $Q_n$-smooth part shrinks each required proper divisor whenever a prime above $Q_n$ divides $m$.
+
+Write $\mathcal{W}(Q_n)$ for the cube of $Q_n$-smooth prime weights vanishing above $Q_n$. Define the smooth multiplicity, smooth part, and three-factor set by
+\[
+\Omega_{\le Q_n}(m) := \sum_{p \le Q_n} v_p(m), \qquad \sm_{Q_n}(m) := \prod_{p \le Q_n} p^{v_p(m)}, \qquad \mathcal{M}_{\ge 3}(Q_n) := \{1 \le m \le M : \Omega_{\le Q_n}(m) \ge 3\}.
+\]
+
+\begin{theorem}[$Q_n$-Smooth Matching Sufficiency, Graph Collapse, and Sieve Bounds]
+\label{thm:smooth}
+Fix smoothness bound $Q_n \ge 2$, interval length $M \ge 2$, and non-negative shift $x$.
+\begin{enumerate}
+\item Suppose an injection $\pi$ from $\mathcal{M}_{\ge 3}(Q_n)$ into $I_x$ satisfies $(\sm_{Q_n}(m) / p) \mid \pi(m)$ at some smooth prime factor $p$ of $\sm_{Q_n}(m)$ across $\mathcal{M}_{\ge 3}(Q_n)$. Then $(H_2)$ holds at $(M, x, w)$ simultaneously across all continuous $w \in \mathcal{W}(Q_n)$.
+\item Across $Q_n \le M \le 4 Q_n$, every integer up to $M$ of multiplicity at least three has largest prime factor at most $Q_n$. In that band, $\mathcal{M}_{\ge 3}(Q_n)$ coincides with $\mathcal{M}_{\ge 3}$.
+\item Fix positive $\delta$ and binary weights on a smooth prime subset $S$ at index $j$ where $L = L_{j, 1}$ exceeds $Q_n^{1 + \delta}$. Write $S_{< j}$ for the primes of $S$ below $p_j$, with reciprocal sum $\mu_j$.
+\begin{itemize}
+\item \emph{Dense harmonic sums.} As $\mu_j \to \infty$, Selberg's upper sieve~\cite{halberstamrichert74} bounds coprime survivors on the scaled block uniformly in $x$. Semiprimes $p q \le L$ with $q \ge p_j$ gain a factor $\mu_j$, dominating $(H_2)$ once $\mu_j$ exceeds an absolute constant.
+\item \emph{Sparse harmonic sums.} Suppose $\mu_j$ lies strictly between zero and one, with $S_{< j}$ supported on primes at most $L^{1 / 2 - \theta}$ for fixed positive $\theta$. Second-moment Cauchy--Schwarz yields
+\[
+\bigl|\{b' \in I_{j, 1} : Y_j(b') \ge 1\}\bigr| \;\ge\; (1 - o(1)) \frac{\mu_j}{1 + \mu_j} L \;>\; \frac{1}{2}\Bigl(\mu_j^2 + \sum_{p \in S_{< j}} p^{-2}\Bigr) L \;\ge\; \bigl|\{k \le L : Y_j(k) \ge 2\}\bigr|.
+\]
+\end{itemize}
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Every smooth weight vector $w$ obeys $X_w(m) \le \Omega_{\le Q_n}(m)$, vanishing in the hinge left sum outside $\mathcal{M}_{\ge 3}(Q_n)$. Divisibility $(\sm_{Q_n}(m) / p) \mid \pi(m)$ implies $X_w(\pi(m)) \ge X_w(m) - 1$. Summing $(X_w(\pi(m)) - 1)_+ \ge (X_w(m) - 2)_+$ across the injective image proves the matching claim.
+
+Factoring $m = p_{\max}(m) u$ with $u$ having at least two prime factors forces $u \ge 4$ and $p_{\max}(m) \le Q_n$, proving the second claim. For dense sums, Selberg's bound pairs with the prime range $[p_j, L / p]$ opened by $Q_n$-smoothness. Under the sparse prime bound $L^{1 / 2 - \theta}$, off-diagonal rounding errors in the second moment total $o(L)$. Cauchy--Schwarz therefore closes sparse sums $\mu_j < 1$.
+\end{proof}
+
+\section{Formal Verification and Open Analytical Obligations}
+
+Formal kernel checking and adversarial stress tests separate the proved theorems above from three open analytical problems required for the asymptotic conjecture. DualKernel audits all $51$ Lean declarations across five formalization modules with zero unproven axioms. Table~\ref{tab:checks} records the verified counts across all proof components and computational stress suites, including $44{,}800$ two-prime configurations with zero deficit.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{p{5.2cm}rp{5.4cm}}
+\toprule
+Verified Component & Recorded Metric & Verification Basis \\
+\midrule
+Formal Lean 4 theorems across $5$ files & $51$ decls ($0$ \texttt{sorry}) & DualKernel independent typecheck \\
+Two-prime $(H_1)$ and $(H_2)$ grid checks & $44{,}800$ instances & Minimum surplus $0.000000$ (Theorem~\ref{thm:twoprime}) \\
+Five-prime DC counterexample ($M = 65{,}231$) & $0.00$ vs $+0.90$ & All $32$ binary vertices vs $w_* = (1/2)^5$ \\
+Uncut $r \ge 2$ series coefficient & $0.579931 M$ & Exceeds $\varepsilon M$ for all $\varepsilon < 0.579$ \\
+Discrete divisor-peeling band checks & $2{,}530$ pairs & $100\%$ land in $(s, s + 1 + \varepsilon]$ (Theorem~\ref{thm:peeldiv}) \\
+Smooth Hopcroft--Karp CRT matchings & Up to $M = 15{,}120$ & $100\%$ matched ($1{,}728$ of $1{,}728$ at $n = 500$) \\
+Continuous coordinate-ascent ($Q_n = 40, M = 2{,}500$) & $\max F_2 = 0.000000$ & $5$ initializations under centered CRT \\
+\bottomrule
+\end{tabular}
+\caption{Summary of DualKernel formal verification counts and standalone computational checks.}
+\label{tab:checks}
+\end{table}
+
+Completing an unconditional proof of $(2 + o(1)) n$ via this architecture requires closing three explicit analytical obligations.
+\begin{enumerate}
+\item \emph{Uniform Hall condition for smooth matching.} The matching criterion in Theorem~\ref{thm:smooth} requires proving $|N_{I_x}(U)| \ge |U|$ analytically across subsets $U$ of $\mathcal{M}_{\ge 3}(Q_n)$ and Chinese Remainder shifts by puncturing hubs.
+\item \emph{Continuous multi-scale weights on medium primes.} Proposition~\ref{prop:dc} rules out binary vertex reduction, so extending the sieve bounds requires controlling fractional weights on medium primes where prime triples exceed $L_{j, 1}$.
+\item \emph{Quadratic-to-cubic interval bridge.} Smooth rank rounding~\cite{bergstrom26asymptotic} reduces intervals below $Q_n^2$ to smooth hinge bounds. Quadratic peeling gives three-times-$n$ above $9n^2$. Long-interval prime covers give two-times-$n$ above $8n^3$~\cite{chen26}, leaving the intermediate band open.
+\end{enumerate}
+
+\section*{Data and Code Availability}
+
+Five Lean 4 formalization modules ($51$ declarations verified by DualKernel) and three zero-dependency Rust verifiers are archived at Zenodo~\cite{bergstrom26smoothcode} (\url{https://doi.org/10.5281/zenodo.24366998}) alongside the companion archives~\cite{bergstrom26small,bergstrom26asymptotic}.
+\begin{itemize}
+\item Scaled-interval integral verifier ($3{,}174$ bytes) has SHA-256 digest {\small \texttt{05ec9b8d6e30a0d987d3319387955a2d19e5b88a7bd796445944894fda6a2ad3}}.
+\item Smooth matching and sieve explorer ($27{,}202$ bytes) has SHA-256 digest {\small \texttt{48add0a21fd8869f5e66f45114fd48e219bc0f7ebf1b7b527a30362bc3c86fc0}}.
+\item Analytical checks and DC counterexample verifier ($17{,}038$ bytes) has SHA-256 digest {\small \texttt{84b59b9b7093c0ef1982088eaee9dc5a79140d54a5785586da5bd2c3e2a10e92}}.
+\end{itemize}
+
+\section*{Acknowledgments and Declaration of Generative AI}
+
+The author used internal research automation (Karen, 24x AI Research) and Google Gemini during counterexample search, Lean 4 formalization, verifier implementation, and manuscript editing. Every proof and computation was subsequently reviewed, verified, and edited by the author, who assumes full responsibility for the mathematical content.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

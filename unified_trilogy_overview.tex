@@ -1,0 +1,71 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.95in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\sm}{sm}
+
+\title{Divisibility of Interval Subproducts for Erd\H{o}s Problem 708:\\
+Exact Small-$n$ Values, Smooth LP Rank Rounding, and the\\
+$Q_n$-Smooth Shifted-Interval Hinge Architecture Toward $(2 + o(1))n$}
+\author{C. Bergstr\"om \\ 24x AI Research \\ \texttt{ORCID: 0009-0008-7153-1817}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+% ============================================================================
+% VERSION A: UNCONDITIONAL + CONDITIONAL TRILOGY ABSTRACT (RIGOROUS TODAY)
+% ============================================================================
+\begin{abstract}
+\noindent\textbf{Abstract (Unconditional Trilogy \& Exact Reduction Architecture).}
+For a set $A \subseteq \mathbb{Z}_{\ge 2}$ of $n$ integers with maximum $M = \max(A)$, let $g(n)$ denote the least integer such that every interval $I_x = \{x + 1, \dots, x + M\}$ ($x \in \mathbb{Z}_{\ge 0}$) contains a subset $B \subseteq I_x$ of cardinality $|B| \le g(n)$ satisfying $\prod_{a \in A} a \mid \prod_{b \in B} b$. Erd\H{o}s and Sur\'anyi (1959) established $g(3) = 4$ and $g(n) \ge (2 - o(1))n$, and Erd\H{o}s posed Problem~708 asking whether $g(n) \le (2 + o(1))n$. Across a three-part program, we establish exact finite values, sharpen the global asymptotic upper bound by $20\%$, and construct a $Q_n$-smooth shifted-interval hinge reduction targeting $(2 + o(1))n$:
+\begin{enumerate}
+\item \emph{Exact small-$n$ values and extremal hypergraphs (Paper~I).} Using centered-CRT collision-tree decomposition ($\prod_{j=1}^k a_j = \lcm(a_1, \dots, a_k) \prod_{j=2}^k d_j$) and branch-and-bound verification over punctured windows, we resolve $g(4) = 5$, $g(5) = 6$, and $g(6) = 8$, and construct asymmetric bipartite CRT witnesses proving $g(7) \ge 9$ and $g(8) \ge 11$.
+\item \emph{Whole-cofactor peeling and $(56501/6400 + o(1))n$ global bound (Paper~II).} Via incremental cumulative-GCD extension, we peel all elements carrying a prime factor $\ge Q$ together with their smooth cofactors in $\le 2|A_{\mathrm{hi}}| - 1$ picks whenever $Q^2 > M$. Restricting extreme-point linear-programming rank rounding to $Q_n$-smooth subsets drops the vertex-rounding surcharge from $+2n$ to $\pi(Q_n - 1) = o(n)$, yielding a self-contained $\tau(A, I_x) \le 3n$ bound for $M \ge 9n^2$, a universal vertex-saving bound for semiprime multigraphs, and the unconditional bound $g(n) \le (56501 / 6400 + o(1))n < (8.8283 + o(1))n$ ($g(n) \le 10n$ for $n \ge 1{,}446$).
+\item \emph{$Q_n$-smooth $s$-integral telescoping and matching architecture (Paper~III).} Expanding the shifted-interval hinge inequality $(H_c)$ ($c = 2 + \varepsilon$) via a prime-by-prime $s$-integral over scaled intervals $I_{j,r} = \{\lfloor x / p_j^r \rfloor + 1, \dots, \lfloor (x + M) / p_j^r \rfloor\}$, we prove universal deterministic dominance across all negative thresholds $s < 0$, unconditional pointwise dominance at every $c \ge 1$ for all one- and two-prime weight vectors $w \in [0, 1]^2$, prime-by-prime absorption of high prime powers $p_j^r > M / L_0$ via discrete intermediate-value divisor peeling, and a $Q_n$-smooth proper-divisor matching criterion $\mathcal{M}_{\ge 3}(Q_n) \hookrightarrow I_x$ verified across adversarial CRT windows up to $M = 15{,}120$.
+\end{enumerate}
+\end{abstract}
+
+% ============================================================================
+% VERSION B: TARGET UNIFIED RESOLUTION ABSTRACT (UPON CLOSING HALL + MULTI-SCALE)
+% ============================================================================
+\begin{remark}[Target Resolution Abstract Once Analytical Obligations~A--C Close]
+\emph{``Let $A \subseteq \mathbb{Z}_{\ge 2}$ be an $n$-element set with maximum $M = \max(A)$, and let $g(n)$ be the smallest integer such that every interval of $M$ consecutive positive integers contains a subset $B$ of size at most $g(n)$ whose product is divisible by $\prod_{a \in A} a$. Resolving Problem~708 of Erd\H{o}s (1959, 1992), we prove $g(n) = (2 + o(1))n$, matching the Erd\H{o}s--Sur\'anyi semiprime-clique lower bound $g(n) \ge (2 - o(1))n$, alongside exact small-$n$ values $g(4) = 5$, $g(5) = 6$, and $g(6) = 8$. Our proof combines whole-cofactor cumulative-GCD peeling, smooth extreme-point LP rank rounding, $Q_n$-smooth proper-divisor bipartite matching in the short-to-quadratic regime, and prime-by-prime $s$-integral sieve dominance across arbitrary continuous dual weights $w \in [0, 1]^{\{p \le Q_n\}}$.''}
+\end{remark}
+
+\section{Unified Theorem Overview Across Papers I--III}
+
+\begin{theorem}[Exact Small-$n$ Values and Extremal Lower Bounds --- Paper~I]
+The product-cover function satisfies $g(1) = 1$, $g(2) = 2$, $g(3) = 4$, $g(4) = 5$, $g(5) = 6$, $g(6) = 8$, $g(7) \ge 9$, and $g(8) \ge 11$. In particular, $g(6) = 8$ is realized both on $A = \{221, 289, 299, 323, 391, 437\}$ ($M = 437$) and on the asymmetric complete bipartite semiprime family $K_{2,3}$ on $\{23, 29, 31\} \times \{37, 41\}$ ($M = 1{,}271$), while $K_{2,4}$ on $\{41, 43, 47, 53\} \times \{59, 61\}$ ($M = 3{,}233$) realizes $g(8) \ge 11$.
+\end{theorem}
+
+\begin{theorem}[Whole-Cofactor Peeling, Smooth LP Rank Rounding, and $8.83n$ Bound --- Paper~II]
+\leavevmode
+\begin{enumerate}
+\item \emph{(Whole-cofactor peeling).} Partition $A = A_{\mathrm{sm}} \sqcup A_{\mathrm{hi}}$ at $Q \ge 2$ with $Q^2 > M$. Given any cover $B_{\mathrm{sm}} \subseteq I_x$ of $A_{\mathrm{sm}}$ with $L := |B_{\mathrm{sm}}| + 2|A_{\mathrm{hi}}|$ and $\max_{a \in A_{\mathrm{hi}}} (a / p_{\max}(a)) \le \lfloor M / L \rfloor$, $B_{\mathrm{sm}}$ extends to a cover $B \subseteq I_x$ of $A$ of size $|B| \le |B_{\mathrm{sm}}| + 2|A_{\mathrm{hi}}| - r \le L - 1$, where $r \ge 1$ counts distinct primes $\ge Q$ dividing $\prod_{a \in A_{\mathrm{hi}}} a$.
+\item \emph{(Quadratic-interval and multigraph bounds).} Every $n$-set $A$ with $M \ge 9n^2$ satisfies $\tau(A, I_x) \le 3|A_{\mathrm{sm}}| + 2|A_{\mathrm{hi}}| \le 3n$. Every loopless semiprime multigraph $G = (V, E)$ ($|E| = m$, $u_e w_e \le M$, $\deg_E(v) \le |I_x \cap v\mathbb{Z}|$) satisfies $\tau(G, I_x) \le 2m - \lceil |V_{\mathrm{non\text{-}iso}}| / 2 \rceil$, and $\le 2m - \max(|P_{\mathrm{non\text{-}iso}}|, |Q_{\mathrm{non\text{-}iso}}|)$ when bipartite.
+\item \emph{(Smooth surcharge elimination and unconditional global bound).} If $(H_c)$ holds on $Q_n$-smooth weights ($w_p = 0$ for $p > Q_n := \min\{Q : Q \ge \lfloor c n \rfloor + \pi(Q - 1) + 1\}$) at $c \ge 2$, then $\tau(A, I_x) \le \lfloor c n \rfloor + \pi(Q_n - 1) = (c + o(1))n$ for all $M \le Q_n^2 - 1$. Unconditionally, $(H_{56501/6400})$ and part~(2) yield $g(n) \le (56501 / 6400 + o(1))n < (8.8283 + o(1))n$, with $g(n) \le 10n$ for all $n \ge 1{,}446$.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}[$Q_n$-Smooth $s$-Integral Decomposition and Analytical Audit --- Paper~III]
+Fix $c \ge 1$, $M \ge 2$, $x \in \mathbb{Z}_{\ge 0}$, active primes $p_1 < \dots < p_K \le \min(Q_n, M)$, and $Y_j(u) := \sum_{i < j} v_{p_i}(u) w_{p_i}$ for $w \in [0, 1]^{\{p \le Q_n\}}$.
+\begin{enumerate}
+\item \emph{(Negative-$s$ and high-power dominance).} On $(-\infty, 0)$, $\sum_{k=1}^{\lfloor M/p_j^r \rfloor} \mathbf{1}_{Y_j(k) > s + c - 1} \le \lfloor M / p_j^r \rfloor \le |I_{j,r}| = \sum_{b' \in I_{j,r}} \mathbf{1}_{Y_j(b') > s}$ holds deterministically for all $(j, r, M, x, w)$. Every $(j, r)$ with $p_j^r > M$ or $(r - 1) w_{p_j} \ge 1$ satisfies $\mathrm{LHS}_{j,r} \le \mathrm{RHS}_{j,r}$.
+\item \emph{(Unconditional $K \le 2$ pointwise dominance).} Whenever $K \le 2$, $(H_c)$ holds pointwise in $(j, r, s)$ for all $(w_1, w_2) \in [0, 1]^2$, all $M \ge 1$, all $x \ge 0$, and all $c \ge 1$, with strict exponent boost $a(s + c - 1) \ge a(s) + 1$ at $c \ge 2$.
+\item \emph{(Non-convexity of DC reduction).} The functional $F_c(w) := \sum_{m=1}^M (X_w(m) - c)_+ - \sum_{b \in I_x} (X_w(b) - 1)_+$ is a difference of convex piecewise-linear functions whose global maximum on $[0, 1]^K$ need not occur on $\{0, 1\}^K$ (explicitly violated at $K = 5$, $P = \{29, 31, 37, 41, 43\}$, $M = 65{,}231$, $x_5 = 6{,}697{,}389{,}240{,}194{,}279{,}945{,}569{,}557{,}312{,}011$, $c = 1.06$, where $\max_{w \in \{0, 1\}^5} F_{1.06}(w) = 0$ while $F_{1.06}(\tfrac{1}{2}, \dots, \tfrac{1}{2}) = 15.40 - 14.50 = +0.90$).
+\item \emph{(Discrete intermediate-value divisor peeling for $p_j^r > M / L_0$).} For $c = 2 + \varepsilon$ and any cutoff $L_0 \ge 1$, every $(j, r)$ with $p_j^r > M / L_0$ and $\mathrm{LHS}_{j,r}^+ > 0$ forces $w_{p_j} < \frac{1}{r - 1}$ and exhibits a witness $k_0 \le L_0$ whose prime-factor peeling yields a divisor $1 \le d_0 \le L_0$ satisfying $s + \varepsilon < Y_j(d_0) \le s + 1 + \varepsilon$ across $s \in [1 - w_{p_j}, 1]$, bounding $\sum_{p_j^r > M / L_0} \mathrm{LHS}_{j,r}^+ \le 2 L_0 w_{p_j}$ per active prime $p_j$.
+\item \emph{(Smooth proper-divisor matching criterion and $4 Q_n$ collapse).} An injection $\pi : \mathcal{M}_{\ge 3}(Q_n) \hookrightarrow I_x$ with $(\sm_{Q_n}(m) / p) \mid \pi(m)$ for some smooth prime $p \mid \sm_{Q_n}(m)$ implies $(H_2)$ across all continuous $w \in [0, 1]^{\{p \le Q_n\}}$ simultaneously (avoiding DC non-convexity completely). For $M \le Q_n - 1$, Proposition~1 already yields $\tau(A, I_x) \le M < Q_n$; for $Q_n \le M \le 4 Q_n$, $\mathcal{M}_{\ge 3}(Q_n) = \mathcal{M}_{\ge 3}$ identically.
+\end{enumerate}
+\end{theorem}
+
+\end{document}
